@@ -78,7 +78,11 @@ class Image:
         for tag in reference.EXIF_TAGS_ENCODED_IN_UCS2:
             value = data.get(tag)
             if value:
-                data[tag] = self._encode_ucs2(value)
+                # if the value is a list (like a list of keywords) then encode each element on its own
+                if isinstance(value, list):
+                    data[tag] = [self._encode_ucs2(a) for a in value]
+                else:
+                    data[tag] = self._encode_ucs2(value)
 
         self.img.modify_exif(self._dumps(data), encoding)
 
